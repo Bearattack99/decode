@@ -1,56 +1,207 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Encoder/Decoder</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Message Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --danger: #f72585;
         }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
         .container {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            transition: all 0.3s ease;
         }
+        
+        h1 {
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
         textarea {
             width: 100%;
-            height: 100px;
-            margin-bottom: 10px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            resize: none;
+            min-height: 120px;
+            transition: border 0.3s ease;
         }
-        .buttons {
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .button-group {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            margin-bottom: 24px;
         }
+        
         button {
-            padding: 8px 16px;
             flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .result {
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .encode-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .encode-btn:hover {
+            background-color: var(--secondary);
+        }
+        
+        .decode-btn {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .decode-btn:hover {
+            background-color: #3a86ff;
+        }
+        
+        .result-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
             margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .result-title {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        #resultText {
+            font-size: 16px;
+            line-height: 1.6;
+            word-break: break-word;
+        }
+        
+        .copy-btn {
+            background-color: var(--accent);
+            color: white;
+            margin-top: 15px;
             padding: 10px;
-            background: #f0f0f0;
-            border-radius: 4px;
+            width: 100%;
+        }
+        
+        .copy-btn:hover {
+            background-color: #3a86ff;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--dark);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Secret Message Converter</h1>
-        <textarea id="inputText" placeholder="Type your message here..."></textarea>
-        <div class="buttons">
-            <button onclick="encode()">Encode</button>
-            <button onclick="decode()">Decode</button>
+        <h1>🔒 Secret Message Converter</h1>
+        
+        <div class="input-group">
+            <textarea id="inputText" placeholder="Type your secret message here..."></textarea>
         </div>
-        <div id="result" class="result" style="display:none">
-            <h3>Result:</h3>
+        
+        <div class="button-group">
+            <button class="encode-btn" onclick="encode()">
+                <span>Encode</span>
+            </button>
+            <button class="decode-btn" onclick="decode()">
+                <span>Decode</span>
+            </button>
+        </div>
+        
+        <div class="result-container" id="resultContainer">
+            <h3 class="result-title">Result:</h3>
             <p id="resultText"></p>
+            <button class="copy-btn" onclick="copyResult()">Copy to Clipboard</button>
         </div>
     </div>
-
+    
+    <div class="notification" id="notification">Copied to clipboard!</div>
+    
     <script>
         const encodingMap = {
             'a': 'a', 'b': 'c', 'c': 'e', 'd': 'f', 'e': 'h',
@@ -67,7 +218,7 @@
             'Z': 'Z'
         };
 
-        // Create decoding map by reversing encodingMap
+        // Create decoding map
         const decodingMap = {};
         for (const key in encodingMap) {
             decodingMap[encodingMap[key]] = key;
@@ -78,21 +229,60 @@
         }
 
         function encode() {
-            const input = document.getElementById('inputText').value;
+            const input = document.getElementById('inputText').value.trim();
+            if (!input) {
+                showNotification("Please enter some text first!");
+                return;
+            }
+            
             const result = transformText(input, encodingMap);
             showResult(result);
         }
 
         function decode() {
-            const input = document.getElementById('inputText').value;
+            const input = document.getElementById('inputText').value.trim();
+            if (!input) {
+                showNotification("Please enter some text first!");
+                return;
+            }
+            
             const result = transformText(input, decodingMap);
             showResult(result);
         }
 
         function showResult(text) {
-            document.getElementById('resultText').textContent = text;
-            document.getElementById('result').style.display = 'block';
+            const resultContainer = document.getElementById('resultContainer');
+            const resultText = document.getElementById('resultText');
+            
+            resultText.textContent = text;
+            resultContainer.style.display = 'block';
+            
+            // Scroll to result if it's not fully visible
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
+
+        function copyResult() {
+            const resultText = document.getElementById('resultText').textContent;
+            navigator.clipboard.writeText(resultText)
+                .then(() => showNotification("Copied to clipboard!"))
+                .catch(err => showNotification("Failed to copy!"));
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.opacity = 1;
+            
+            setTimeout(() => {
+                notification.style.opacity = 0;
+            }, 2000);
+        }
+        
+        // Auto-resize textarea as user types
+        document.getElementById('inputText').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
     </script>
 </body>
 </html>
